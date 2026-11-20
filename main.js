@@ -462,7 +462,7 @@ ipcMain.handle("twitch:get-analytics", async () => {
     Authorization: `Bearer ${twitchSession.accessToken}`
   };
   const videosPromise = twitchRequest(
-    `${HELIX_URL}/videos?user_id=${encodeURIComponent(twitchSession.userId)}&type=archive&sort=time&first=20`,
+    `${HELIX_URL}/videos?user_id=${encodeURIComponent(twitchSession.userId)}&type=archive&sort=time&first=100`,
     { headers }
   );
   const followersPromise = Array.isArray(twitchSession.scopes)

@@ -22,7 +22,7 @@
           <span class="brand-name">streammate<span>STUDIO</span></span>
         </a>
 
-        <div class="workspace-label">ワークスペース</div>
+        <div class="workspace-label" id="workspace-name-sidebar">花守 はなの配信部屋</div>
         <button class="profile-switcher" id="twitch-account-button" type="button">
           <span class="avatar avatar-twitch">t</span>
           <span class="profile-copy"><strong id="twitch-account-name">Twitch未接続</strong><small id="twitch-account-status">クリックしてログイン</small></span>
@@ -36,14 +36,14 @@
           <button class="nav-link" data-page="schedule"><span class="nav-icon">▦</span>配信スケジュール</button>
           <button class="nav-link" data-page="growth"><span class="nav-icon">↗</span>成長レポート</button>
           <div class="nav-caption nav-caption-spaced">あなたの活動</div>
-          <button class="nav-link" data-page="checklist"><span class="nav-icon">☑</span>配信チェックリスト</button>
+          <button class="nav-link" data-page="analysis"><span class="nav-icon">▥</span>配信分析</button>
         </nav>
 
         <div class="sidebar-bottom">
           <div class="sidebar-tool">
-            <div class="sidebar-tool-heading"><span class="tool-status-dot"></span><strong>配信の準備</strong></div>
-            <p>配信前の確認をまとめて管理できます。</p>
-            <button type="button" class="sidebar-tool-link" data-page-link="checklist">チェックリストを開く <span>→</span></button>
+            <div class="sidebar-tool-heading"><span class="tool-status-dot"></span><strong>配信を振り返る</strong></div>
+            <p>公開アーカイブの再生数や配信時間を分析できます。</p>
+            <button type="button" class="sidebar-tool-link" data-page-link="analysis">配信分析を開く <span>→</span></button>
           </div>
           <button class="nav-link settings-link" data-page="settings"><span class="nav-icon">⚙</span>設定</button>
           <div class="sidebar-footer"><span class="online-dot"></span>すべてのデータはこの端末に保存されます</div>
@@ -52,7 +52,7 @@
 
       <main class="main-panel">
         <header class="topbar">
-          <div class="breadcrumb"><span>ワークスペース</span><span class="crumb-separator">/</span><strong id="current-section">ホーム</strong></div>
+          <div class="breadcrumb"><span id="workspace-name-breadcrumb">花守 はなの配信部屋</span><span class="crumb-separator">/</span><strong id="current-section">ホーム</strong></div>
           <div class="topbar-actions">
             <label class="search-box">
               <span>⌕</span>
@@ -117,7 +117,7 @@
         <section id="twitch-connected-panel" hidden>
           <div class="connected-account"><span class="connected-check">✓</span><div><strong id="twitch-connected-name"></strong><small>アカウントが接続されています</small></div></div>
           <p class="twitch-auth-status" id="twitch-connected-note"></p>
-          <div class="dialog-actions"><button class="button button-quiet" id="twitch-logout" type="button">ログアウト</button><button class="button button-primary" id="twitch-done" type="button">完了</button></div>
+          <div class="dialog-actions"><button class="button button-quiet" id="twitch-reauthorize" type="button">権限を更新</button><button class="button button-quiet" id="twitch-logout" type="button">ログアウト</button><button class="button button-primary" id="twitch-done" type="button">完了</button></div>
         </section>
         <section id="twitch-error-panel" hidden>
           <div class="twitch-error-message" id="twitch-error-message"></div>

@@ -62,6 +62,8 @@ let activeFilter = "すべて";
 let searchQuery = "";
 let events = readStorage("streammate-events", initialEvents);
 let favorites = readStorage("streammate-favorites", []);
+const defaultWorkspaceName = "花守 はなの配信部屋";
+let workspaceName = loadWorkspaceName();
 let monthOffset = 0;
 let analyticsData = null;
 let analyticsError = "";
@@ -78,6 +80,13 @@ function readStorage(key, fallback) {
     console.error(`保存データの読み込みに失敗しました: ${key}`, error);
     return fallback;
   }
+}
+
+function loadWorkspaceName() {
+  const savedName = readStorage("streammate-workspace-name", defaultWorkspaceName);
+  return typeof savedName === "string" && savedName.trim()
+    ? savedName.trim().slice(0, 40)
+    : defaultWorkspaceName;
 }
 
 function saveStorage(key, value) {
@@ -346,7 +355,7 @@ function renderGrowth() {
     const totalViews = videos.reduce((sum, video) => sum + Math.max(0, Number(video.viewCount) || 0), 0);
     const totalSeconds = videos.reduce((sum, video) => sum + durationInSeconds(video.duration), 0);
     const averageViews = videos.length ? Math.round(totalViews / videos.length) : 0;
-    const topVideo = [...videos].sort((a, b) => Number(b.viewCount) - Number(a.viewCount))[0];
+    const topVideo = [...videos].sort((a, b) => (Number(b.viewCount) || 0) - (Number(a.viewCount) || 0))[0];
     content = `<div class="growth-grid">
       <div class="growth-card"><small>現在のフォロワー数</small><strong>${analyticsData.followerCount === null ? "許可が必要" : formatNumber(analyticsData.followerCount)}</strong><span>${analyticsData.followerCount === null ? "Twitchから閲覧許可を取得します" : "Twitchから取得"}</span>${analyticsData.followerPermissionRequired ? followerPermissionAction() : ""}</div>
       <div class="growth-card"><small>取得したアーカイブ</small><strong>${formatNumber(videos.length)} 件</strong><span>最新100件まで取得</span></div>
@@ -451,17 +460,19 @@ function renderSettings() {
       <div class="settings-row"><div><strong>Twitchアカウント</strong><small>Client IDは画面に表示せず、端末内に暗号化して保存します。</small></div><div class="settings-action-group"><span class="category-badge" id="twitch-config-status">${twitchClientIdConfigured ? "Client ID設定済み" : "未設定"}</span><button class="button button-quiet" data-open-twitch>設定</button></div></div>
       <div class="settings-row"><div><strong>アップデート通知</strong><small>HTTPSのJSON更新フィードを設定すると、起動時・1日ごとに更新を確認します。</small></div><div class="settings-action-group"><span class="category-badge">${updateFeedUrl ? "設定済み" : "更新元未設定"}</span><button class="button button-quiet" data-check-update>今すぐ確認</button></div></div>
       <div class="settings-row feed-url-row"><label for="update-feed-url"><strong>更新フィードURL</strong><small>公開するupdate.jsonのHTTPS URL</small></label><div class="twitch-settings-field"><input id="update-feed-url" type="url" value="${escapeHTML(updateFeedUrl)}" placeholder="https://example.com/streammate/update.json"><button class="button button-quiet" id="save-update-feed" type="button">保存</button></div></div>
-      <div class="settings-row"><div><strong>ワークスペース名</strong><small>あなたの活動スペースの名前</small></div><span>花守 はなの配信部屋</span></div>
+      <div class="settings-row"><div><strong>ワークスペース名</strong><small>名前を入力して保存してください（40文字まで）</small></div><form class="twitch-settings-field workspace-name-field" id="workspace-name-form"><input id="workspace-name-input" type="text" maxlength="40" required value="${escapeHTML(workspaceName)}" aria-label="ワークスペース名"><button class="button button-quiet" type="submit">保存</button></form></div>
       <div class="settings-row"><div><strong>表示言語</strong><small>アプリで使用する言語</small></div><select aria-label="表示言語"><option>日本語</option><option>English</option></select></div>
-      <div class="settings-row"><div><strong>データの保存先</strong><small>スケジュールやチェックリストの保存場所</small></div><span class="category-badge">この端末内</span></div>
+      <div class="settings-row"><div><strong>データの保存先</strong><small>スケジュールやお気に入りの保存場所</small></div><span class="category-badge">この端末内</span></div>
       <div class="settings-row"><div><strong>Streammate Studio</strong><small>配信者のためのクリエイタースタジオ</small></div><span>バージョン ${escapeHTML(currentAppVersion)}</span></div>
     </section>`;
 }
 
 function render() {
   sectionLabel.textContent = sectionNames[currentPage];
+  document.getElementById("workspace-name-sidebar").textContent = workspaceName;
+  document.getElementById("workspace-name-breadcrumb").textContent = workspaceName;
   document.querySelectorAll(".nav-link[data-page]").forEach((link) => link.classList.toggle("active", link.dataset.page === currentPage));
-  const views = { home: renderHome, library: renderLibrary, schedule: renderSchedule, growth: renderGrowth, checklist: renderChecklist, settings: renderSettings };
+  const views = { home: renderHome, library: renderLibrary, schedule: renderSchedule, growth: renderGrowth, analysis: renderAnalysis, settings: renderSettings };
   pageContent.innerHTML = views[currentPage]();
 }
 
@@ -484,6 +495,7 @@ document.addEventListener("click", (event) => {
   const downloadResource = event.target.closest("[data-download-resource]");
   const openBooth = event.target.closest("[data-open-booth]");
   const openTwitch = event.target.closest("[data-open-twitch]");
+  const reauthorizeTwitchButton = event.target.closest("[data-reauthorize-twitch]");
   const refreshAnalytics = event.target.closest("[data-refresh-analytics]");
   const checkUpdate = event.target.closest("[data-check-update]");
   const saveUpdateFeedButton = event.target.closest("#save-update-feed");
@@ -499,6 +511,7 @@ document.addEventListener("click", (event) => {
   if (monthButton) { monthOffset += Number(monthButton.dataset.month); render(); }
   if (event.target.closest("[data-open-event]")) openEventDialog();
   if (openTwitch) openTwitchDialog();
+  if (reauthorizeTwitchButton) void reauthorizeTwitch();
   if (downloadResource) void downloadLibraryResource(downloadResource.dataset.downloadResource, downloadResource);
   if (openBooth) void openBoothProduct(openBooth.dataset.openBooth, openBooth);
   if (refreshAnalytics) loadAnalytics();
@@ -506,21 +519,26 @@ document.addEventListener("click", (event) => {
   if (saveUpdateFeedButton) saveUpdateFeed();
 });
 
+document.addEventListener("submit", (event) => {
+  if (event.target.id !== "workspace-name-form") return;
+  event.preventDefault();
+  const input = document.getElementById("workspace-name-input");
+  input.setCustomValidity("");
+  const name = input.value.trim();
+  if (!name) {
+    input.setCustomValidity("ワークスペース名を入力してください。");
+    input.reportValidity();
+    return;
+  }
+  workspaceName = name.slice(0, 40);
+  saveStorage("streammate-workspace-name", workspaceName);
+  render();
+});
+
 document.getElementById("global-search").addEventListener("input", (event) => {
   searchQuery = event.target.value;
   if (searchQuery && currentPage !== "library") currentPage = "library";
   if (currentPage === "library") render();
-});
-
-document.addEventListener("change", (event) => {
-  if (event.target.matches("[data-check]")) {
-    const index = Number(event.target.dataset.check);
-    checkedItems = event.target.checked
-      ? [...new Set([...checkedItems, index])]
-      : checkedItems.filter((item) => item !== index);
-    saveStorage("streammate-checklist", checkedItems);
-    render();
-  }
 });
 
 function openEventDialog() {
@@ -594,7 +612,7 @@ function openTwitchDialog() {
     document.getElementById("twitch-connected-note").textContent =
       twitchAuthState === "unverified"
         ? "接続状態を確認できていません。ネットワークを確認してください。"
-        : "フォロワー数の権限が必要な場合は、ログアウト後に再ログインして許可してください。";
+        : "追加のアクセス許可が必要な場合は「権限を更新」からTwitchで再認証してください。";
     showTwitchPanel(twitchConnectedPanel);
   } else {
     showTwitchPanel(twitchClientIdConfigured ? twitchConnectPanel : twitchSetupPanel);
@@ -646,6 +664,7 @@ async function beginTwitchLogin() {
     showTwitchPanel(twitchErrorPanel);
     return;
   }
+  const previousAuthState = twitchAuthState;
   twitchAuthState = "pending";
   document.getElementById("twitch-start-login").disabled = true;
   document.getElementById("twitch-cancel-login").disabled = true;
@@ -660,7 +679,7 @@ async function beginTwitchLogin() {
     document.getElementById("twitch-cancel-login").disabled = false;
     document.getElementById("twitch-dialog-close").disabled = false;
   } catch (error) {
-    twitchAuthState = "signed-out";
+    twitchAuthState = previousAuthState === "connected" || previousAuthState === "unverified" ? previousAuthState : "signed-out";
     document.getElementById("twitch-error-message").textContent = error.message;
     showTwitchPanel(twitchErrorPanel);
   } finally {
@@ -668,10 +687,31 @@ async function beginTwitchLogin() {
   }
 }
 
+async function reauthorizeTwitch() {
+  if (!window.streammateTwitch) {
+    openTwitchDialog();
+    return;
+  }
+  if (!twitchDialog.open) twitchDialog.showModal();
+  try {
+    const status = await window.streammateTwitch.getClientIdStatus();
+    twitchClientIdConfigured = status.configured;
+    if (!status.configured) {
+      showTwitchPanel(twitchSetupPanel);
+      return;
+    }
+    await beginTwitchLogin();
+  } catch (error) {
+    document.getElementById("twitch-error-message").textContent = `権限の更新を開始できませんでした: ${error.message}`;
+    showTwitchPanel(twitchErrorPanel);
+  }
+}
+
 document.getElementById("twitch-connect-button").addEventListener("click", openTwitchDialog);
 document.getElementById("twitch-account-button").addEventListener("click", openTwitchDialog);
 document.getElementById("twitch-save-client-id").addEventListener("click", saveTwitchClientId);
 document.getElementById("twitch-start-login").addEventListener("click", beginTwitchLogin);
+document.getElementById("twitch-reauthorize").addEventListener("click", reauthorizeTwitch);
 document.getElementById("twitch-change-client-id").addEventListener("click", () => {
   twitchClientIdConfigured = false;
   showTwitchPanel(twitchSetupPanel);
@@ -714,10 +754,17 @@ if (window.streammateTwitch) {
     } else if (status.state === "signed-out") {
       analyticsData = null;
       analyticsError = "";
-      if (currentPage === "home" || currentPage === "growth") render();
+      if (currentPage === "home" || currentPage === "growth" || currentPage === "analysis") render();
     } else if (status.state === "error") {
       document.getElementById("twitch-error-message").textContent = status.message;
       if (twitchDialog.open) showTwitchPanel(twitchErrorPanel);
+      void window.streammateTwitch.getSession()
+        .then((session) => {
+          updateTwitchAccount(session);
+          if (session.state === "connected") void loadAnalytics();
+          else if (currentPage === "home" || currentPage === "growth" || currentPage === "analysis") render();
+        })
+        .catch((error) => console.error("Twitchのログイン状態を再確認できませんでした:", error));
     } else if (status.state === "unverified") {
       document.getElementById("twitch-connected-note").textContent = status.message;
     }
@@ -735,14 +782,14 @@ async function loadAnalytics() {
   if (!window.streammateTwitch || analyticsLoading || twitchAuthState !== "connected") return;
   analyticsLoading = true;
   analyticsError = "";
-  if (currentPage === "home" || currentPage === "growth") render();
+  if (currentPage === "home" || currentPage === "growth" || currentPage === "analysis") render();
   try {
     analyticsData = await window.streammateTwitch.getAnalytics();
   } catch (error) {
     analyticsError = error.message;
   } finally {
     analyticsLoading = false;
-    if (currentPage === "home" || currentPage === "growth") render();
+    if (currentPage === "home" || currentPage === "growth" || currentPage === "analysis") render();
   }
 }
 
