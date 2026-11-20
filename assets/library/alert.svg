@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450" viewBox="0 0 800 450">
+  <defs><filter id="shadow"><feDropShadow dx="0" dy="10" stdDeviation="10" flood-opacity=".35"/></filter></defs>
+  <circle cx="400" cy="225" r="130" fill="#27233a" stroke="#c6f36b" stroke-width="8" filter="url(#shadow)">
+    <animate attributeName="r" values="112;132;112" dur="1.8s" repeatCount="indefinite"/>
+  </circle>
+  <path d="M400 102 L426 186 L510 212 L426 238 L400 322 L374 238 L290 212 L374 186 Z" fill="#c6f36b">
+    <animateTransform attributeName="transform" type="rotate" from="0 400 212" to="360 400 212" dur="12s" repeatCount="indefinite"/>
+  </path>
+  <text x="400" y="410" text-anchor="middle" fill="#f3f0ff" font-family="Yu Gothic UI, sans-serif" font-size="30" font-weight="700">応援ありがとう！</text>
+</svg>

@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="配信の準備から成長までをサポートする、配信者のためのデスクトップスタジオ。"
+    />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'"
+    />
+    <title>Streammate Studio</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="#" aria-label="Streammate Studio ホーム">
+          <span class="brand-mark">S</span>
+          <span class="brand-name">streammate<span>STUDIO</span></span>
+        </a>
+
+        <div class="workspace-label">ワークスペース</div>
+        <button class="profile-switcher" id="twitch-account-button" type="button">
+          <span class="avatar avatar-twitch">t</span>
+          <span class="profile-copy"><strong id="twitch-account-name">Twitch未接続</strong><small id="twitch-account-status">クリックしてログイン</small></span>
+          <span class="chevron">⌄</span>
+        </button>
+
+        <nav class="primary-nav" aria-label="メインメニュー">
+          <div class="nav-caption">メニュー</div>
+          <button class="nav-link active" data-page="home"><span class="nav-icon">⌂</span>ホーム</button>
+          <button class="nav-link" data-page="library"><span class="nav-icon">▤</span>素材ライブラリ<span class="nav-count">18</span></button>
+          <button class="nav-link" data-page="schedule"><span class="nav-icon">▦</span>配信スケジュール</button>
+          <button class="nav-link" data-page="growth"><span class="nav-icon">↗</span>成長レポート</button>
+          <div class="nav-caption nav-caption-spaced">あなたの活動</div>
+          <button class="nav-link" data-page="checklist"><span class="nav-icon">☑</span>配信チェックリスト</button>
+        </nav>
+
+        <div class="sidebar-bottom">
+          <div class="sidebar-tool">
+            <div class="sidebar-tool-heading"><span class="tool-status-dot"></span><strong>配信の準備</strong></div>
+            <p>配信前の確認をまとめて管理できます。</p>
+            <button type="button" class="sidebar-tool-link" data-page-link="checklist">チェックリストを開く <span>→</span></button>
+          </div>
+          <button class="nav-link settings-link" data-page="settings"><span class="nav-icon">⚙</span>設定</button>
+          <div class="sidebar-footer"><span class="online-dot"></span>すべてのデータはこの端末に保存されます</div>
+        </div>
+      </aside>
+
+      <main class="main-panel">
+        <header class="topbar">
+          <div class="breadcrumb"><span>ワークスペース</span><span class="crumb-separator">/</span><strong id="current-section">ホーム</strong></div>
+          <div class="topbar-actions">
+            <label class="search-box">
+              <span>⌕</span>
+              <input id="global-search" type="search" placeholder="素材やコンテンツを検索..." aria-label="素材を検索" />
+              <kbd>⌘ K</kbd>
+            </label>
+            <button class="button button-quiet twitch-connect-button" id="twitch-connect-button" type="button"><span class="twitch-letter">t</span>Twitchに接続</button>
+            <button class="icon-button notification-button" id="update-notice-button" type="button" aria-label="アップデートのお知らせ" title="アップデートのお知らせ">↻<i id="update-indicator" hidden></i></button>
+            <span class="top-avatar avatar avatar-purple">花</span>
+          </div>
+        </header>
+        <div id="page-content" class="page-content"></div>
+      </main>
+    </div>
+
+    <dialog id="event-dialog" class="event-dialog">
+      <form id="event-form">
+        <div class="dialog-heading">
+          <div><span class="eyebrow">YOUR NEXT STREAM</span><h2>配信を予定する</h2></div>
+          <button type="button" class="dialog-close" aria-label="閉じる">×</button>
+        </div>
+        <label>配信タイトル<input name="title" required maxlength="60" placeholder="例：のんびり雑談しよう！" /></label>
+        <div class="form-row">
+          <label>日付<input name="date" type="date" required /></label>
+          <label>開始時間<input name="time" type="time" value="20:00" required /></label>
+        </div>
+        <label>配信カテゴリ
+          <select name="category">
+            <option>雑談</option><option>ゲーム</option><option>作業配信</option><option>歌・音楽</option><option>その他</option>
+          </select>
+        </label>
+        <div class="dialog-actions"><button type="button" class="button button-quiet dialog-cancel">キャンセル</button><button type="submit" class="button button-primary">スケジュールに追加 <span>→</span></button></div>
+      </form>
+    </dialog>
+    <dialog id="twitch-dialog" class="event-dialog twitch-dialog">
+      <div class="twitch-dialog-content">
+        <div class="dialog-heading">
+          <div><span class="eyebrow">TWITCH ACCOUNT</span><h2>Twitchに接続</h2></div>
+          <button type="button" class="dialog-close" id="twitch-dialog-close" aria-label="閉じる">×</button>
+        </div>
+        <section id="twitch-setup-panel">
+          <p class="twitch-intro">Twitchアカウントでログインして、配信者向け機能を使いましょう。パスワードはこのアプリに入力しません。</p>
+          <label class="twitch-client-label">Twitch Client ID
+            <input id="twitch-client-id" type="password" autocomplete="new-password" spellcheck="false" placeholder="Developer Consoleで発行したClient ID" />
+          </label>
+          <p class="twitch-help">Client IDはTwitch Developer Consoleで取得できます。入力後はこの端末内に暗号化して保存し、画面やアプリのソースには表示しません。Client Secretは不要です。</p>
+          <button class="button button-primary twitch-start-button" id="twitch-save-client-id" type="button">Client IDを安全に保存</button>
+          <p class="twitch-redirect-note">デスクトップアプリ用の認証コード方式を使います。OAuthリダイレクトURLは使用しません。</p>
+        </section>
+        <section id="twitch-connect-panel" hidden>
+          <p class="twitch-intro">Twitch Client IDはこの端末内に暗号化して保存されています。</p>
+          <button class="button button-primary twitch-start-button" id="twitch-start-login" type="button"><span class="twitch-letter">t</span>Twitchで認証する <span>→</span></button>
+          <button class="text-link twitch-change-client" id="twitch-change-client-id" type="button">Client IDを変更</button>
+        </section>
+        <section id="twitch-pending-panel" hidden>
+          <p class="twitch-intro">ブラウザーでTwitchを開き、次のコードを入力してアプリを許可してください。</p>
+          <div class="device-code" id="twitch-device-code"></div>
+          <p class="twitch-help">ブラウザーが開かない場合は <strong>twitch.tv/activate</strong> にアクセスしてください。</p>
+          <p class="twitch-auth-status" id="twitch-auth-status">Twitchでの認証を待っています…</p>
+          <div class="dialog-actions"><button class="button button-quiet" id="twitch-cancel-login" type="button">キャンセル</button></div>
+        </section>
+        <section id="twitch-connected-panel" hidden>
+          <div class="connected-account"><span class="connected-check">✓</span><div><strong id="twitch-connected-name"></strong><small>アカウントが接続されています</small></div></div>
+          <p class="twitch-auth-status" id="twitch-connected-note"></p>
+          <div class="dialog-actions"><button class="button button-quiet" id="twitch-logout" type="button">ログアウト</button><button class="button button-primary" id="twitch-done" type="button">完了</button></div>
+        </section>
+        <section id="twitch-error-panel" hidden>
+          <div class="twitch-error-message" id="twitch-error-message"></div>
+          <div class="dialog-actions"><button class="button button-quiet" id="twitch-error-close" type="button">閉じる</button><button class="button button-primary" id="twitch-retry-login" type="button">もう一度試す</button></div>
+        </section>
+      </div>
+    </dialog>
+    <dialog id="update-dialog" class="event-dialog update-dialog">
+      <div class="twitch-dialog-content">
+        <div class="dialog-heading">
+          <div><span class="eyebrow">STREAMMATE UPDATES</span><h2>アップデートのお知らせ</h2></div>
+          <button type="button" class="dialog-close" id="update-dialog-close" aria-label="閉じる">×</button>
+        </div>
+        <p class="update-current-version" id="update-current-version"></p>
+        <section id="update-available-panel" hidden>
+          <span class="category-badge" id="update-version"></span>
+          <h3 class="update-title" id="update-title"></h3>
+          <p class="update-notes" id="update-notes"></p>
+          <button class="button button-primary update-download" id="update-download-button" type="button">ダウンロードページを開く <span>→</span></button>
+        </section>
+        <section id="update-status-panel">
+          <p class="twitch-auth-status" id="update-status-message">更新を確認できます。</p>
+          <button class="button button-quiet" id="update-check-button" type="button">今すぐ確認</button>
+        </section>
+      </div>
+    </dialog>
+    <script src="app.js"></script>
+  </body>
+</html>

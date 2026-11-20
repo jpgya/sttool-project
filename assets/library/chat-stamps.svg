@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <rect width="1200" height="800" rx="36" fill="#1b1b25" />
+  <g font-family="Segoe UI, Yu Gothic UI, sans-serif" font-weight="700" text-anchor="middle">
+    <g fill="#c6f36b"><rect x="55" y="70" width="245" height="145" rx="32"/><rect x="345" y="70" width="245" height="145" rx="32"/><rect x="635" y="70" width="245" height="145" rx="32"/><rect x="925" y="70" width="220" height="145" rx="32"/></g>
+    <g fill="#f3f0ff" font-size="40"><text x="177" y="158">ありがとう</text><text x="467" y="158">ないす！</text><text x="757" y="158">初見さん歓迎</text><text x="1035" y="158">✨  GG</text></g>
+    <g fill="#a58bfa"><rect x="55" y="260" width="245" height="145" rx="32"/><rect x="345" y="260" width="245" height="145" rx="32"/><rect x="635" y="260" width="245" height="145" rx="32"/><rect x="925" y="260" width="220" height="145" rx="32"/></g>
+    <g fill="#171923" font-size="40"><text x="177" y="348">わくわく</text><text x="467" y="348">おつかれ</text><text x="757" y="348">助かる！</text><text x="1035" y="348">💜  NICE</text></g>
+    <g fill="#ffb49a"><rect x="55" y="450" width="245" height="145" rx="32"/><rect x="345" y="450" width="245" height="145" rx="32"/><rect x="635" y="450" width="245" height="145" rx="32"/><rect x="925" y="450" width="220" height="145" rx="32"/></g>
+    <g fill="#29202a" font-size="40"><text x="177" y="538">すごい！</text><text x="467" y="538">なるほど</text><text x="757" y="538">休憩しよう</text><text x="1035" y="538">☕  BREAK</text></g>
+    <g fill="#bce8ee"><rect x="55" y="640" width="245" height="100" rx="32"/><rect x="345" y="640" width="245" height="100" rx="32"/><rect x="635" y="640" width="245" height="100" rx="32"/><rect x="925" y="640" width="220" height="100" rx="32"/></g>
+    <g fill="#172326" font-size="35"><text x="177" y="702">また来てね</text><text x="467" y="702">いってみよう</text><text x="757" y="702">配信開始！</text><text x="1035" y="702">🌱  GG</text></g>
+  </g>
+</svg>

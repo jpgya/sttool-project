@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <defs><linearGradient id="room" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#263743"/><stop offset=".55" stop-color="#29343a"/><stop offset="1" stop-color="#171d25"/></linearGradient><radialGradient id="lamp"><stop stop-color="#f6d79a" stop-opacity=".45"/><stop offset="1" stop-color="#f6d79a" stop-opacity="0"/></radialGradient></defs>
+  <rect width="1920" height="1080" fill="url(#room)"/>
+  <circle cx="1490" cy="280" r="440" fill="url(#lamp)"/>
+  <rect x="0" y="800" width="1920" height="280" fill="#171a20" opacity=".8"/>
+  <path d="M280 800 L420 700 H1500 L1640 800" fill="#41372f" stroke="#a58bfa" stroke-opacity=".35" stroke-width="4"/>
+  <rect x="700" y="500" width="520" height="290" rx="24" fill="#202830" stroke="#c6f36b" stroke-opacity=".65" stroke-width="5"/>
+  <rect x="730" y="530" width="460" height="230" rx="12" fill="#25233a"/>
+  <path d="M120 210 H490 V520 H120 Z" fill="#202830" stroke="#a58bfa" stroke-opacity=".5" stroke-width="5"/>
+  <path d="M170 260 H440 M170 330 H440 M170 400 H440" stroke="#c6f36b" stroke-opacity=".45" stroke-width="8" stroke-linecap="round"/>
+  <text x="960" y="900" text-anchor="middle" fill="#c9cad1" font-family="Yu Gothic UI, sans-serif" font-size="30">作業配信・勉強配信の背景素材</text>
+</svg>
